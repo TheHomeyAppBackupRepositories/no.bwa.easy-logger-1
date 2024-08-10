@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- The '/homey.js' script must be included in your settings view to work -->
+    <script
+      type="text/javascript"
+      src="/homey.js"
+      data-origin="settings"
+    ></script>
+
+ 
+  </head>
+  <body>
+    <header class="homey-header">
+      <h1 class="homey-title" data-i18n="settings.title">
+        <!-- This will be filled with the translated string with key 'settings.title'. -->
+      </h1>
+      <p class="homey-subtitle" data-i18n="settings.subtitle">
+        <!-- This field will also be translated -->
+      </p>
+    </header>
+
+    <fieldset class="homey-form-fieldset">
+      <legend class="homey-form-legend">Google API Setup</legend>
+
+      <div class="homey-form-group">
+        <label class="homey-form-label" for="spreadsheetId">Default spreadsheet-id</label>
+        <input class="homey-form-input" id="spreadsheetId" type="text" value="" />
+      </div>
+      <div class="homey-form-group">
+        <label class="homey-form-label" for="delimiter">delimiter</label>
+        <input class="homey-form-input" id="delimiter" type="text" value="|" />
+      </div>
+      <div class="homey-form-group">
+        <label class="homey-form-label" for="debug">debug (value of 'true' will enable)</label>
+        <input class="homey-form-input" id="debug" type="text" value="" />
+      </div>
+      <div class="homey-form-group">
+        <label class="homey-form-label" for="retryOn404">retry if HTTP 404 occurs (value of 'true' will enable, more details in documentation)</label>
+        <input class="homey-form-input" id="retryOn404" type="text" value="" />
+      </div>
+      <div class="homey-form-group">
+        <label class="homey-form-label" for="fireAndForget">fire and forget (value of 'true' will enable, when set all call to Google Api wil be executed without waiting for the response. The performance will be very good, and still rate limiting will be controlled. More details in documentation)</label>
+        <input class="homey-form-input" id="fireAndForget" type="text" value="" />
+      </div>
+      <div class="homey-form-group">
+        <label class="homey-form-label" for="intervalCap">intervalCap. The amount of allowed calls to GoogleApi within 60 seconds. Default is 59, lower it if you suspect rate limit issues</label>
+        <input class="homey-form-input" id="intervalCap" type="text" value="" />
+      </div>
+      <div class="homey-form-group">
+        <label class="homey-form-label" for="timestampFormat">timestamp format (more details in documentation)</label>
+        <input class="homey-form-input" id="timestampFormat" type="text" value="" />
+      </div>
+      <div class="homey-form-group">
+        <label class="homey-form-label" for="credentials">Paste Credentials JSON here</label>
+        <textarea class="homey-form-input" style="width: 100%;" id="credentials"  wrap = "off" rows="10"></textarea>
+      </div>
+    </fieldset>
+
+    <button id="save" class="homey-button-primary-full">Save changes</button>
+
+    <script type="text/javascript">
+      function onHomeyReady(Homey) {
+        Homey.ready();
+
+        var spreadsheetIdElement = document.getElementById("spreadsheetId");
+        var credentialsElement = document.getElementById("credentials");
+        var delimiterElement = document.getElementById("delimiter");
+        var saveElement = document.getElementById("save");
+        var debugElement = document.getElementById("debug");
+        var fireAndForgetElement = document.getElementById("fireAndForget");
+        var intervalCapElement = document.getElementById("intervalCap");
+        var timestampFormatElement = document.getElementById("timestampFormat");
+        var retryOn404Element = document.getElementById("retryOn404");
+
+        
+        Homey.get("sheetId", function (err, sheetId) {
+          if (err) return Homey.alert(err);
+          spreadsheetIdElement.value = sheetId;
+        });
+
+        Homey.get("credentials", function (err, credentials) {
+           if (err) return Homey.alert(err);
+           credentialsElement.value = credentials;
+        });
+
+        Homey.get("delimiter", function (err, delimiter) {
+           if (err) return Homey.alert(err);
+
+           if(delimiter !==null && delimiter !==undefined)
+              // only setting if a stored value exists
+              delimiterElement.value = delimiter;
+        });
+
+        Homey.get("debug", function (err, debug) {
+           if (err) return Homey.alert(err);
+           debugElement.value = debug;
+        });
+
+        Homey.get("retryOn404", function (err, retryOn404) {
+           if (err) return Homey.alert(err);
+           retryOn404Element.value = retryOn404;
+        });
+
+
+        Homey.get("fireAndForget", function (err, fireAndForget) {
+           if (err) return Homey.alert(err);
+           fireAndForgetElement.value = fireAndForget;
+        });
+
+        Homey.get("intervalCap", function (err, intervalCap) {
+           if (err) return Homey.alert(err);
+           intervalCapElement.value = intervalCap;
+        });
+
+        
+        Homey.get("timestampFormat", function (err, timestampFormat) {
+           if (err) return Homey.alert(err);
+           timestampFormatElement.value = timestampFormat;
+        });
+
+        saveElement.addEventListener("click", function (e) {
+
+          Homey.set("sheetId", spreadsheetIdElement.value, function (err) {
+            if (err) return Homey.alert(err);
+          });
+          // saving both variants for future renaming of tis value
+          Homey.set("spreadsheetId", spreadsheetIdElement.value, function (err) {
+            if (err) return Homey.alert(err);
+          });
+
+          Homey.set("delimiter", delimiterElement.value, function (err) {
+            if (err) return Homey.alert(err);
+          });
+
+          Homey.set("credentials", credentialsElement.value, function (err) {
+             if (err) return Homey.alert(err);
+          });
+          Homey.set("debug", debugElement.value, function (err) {
+             if (err) return Homey.alert(err);
+          });
+
+          Homey.set("retryOn404", retryOn404Element.value, function (err) {
+             if (err) return Homey.alert(err);
+          });
+          
+          Homey.set("fireAndForget", fireAndForgetElement.value, function (err) {
+             if (err) return Homey.alert(err);
+          });
+          Homey.set("intervalCap", intervalCapElement.value, function (err) {
+             if (err) return Homey.alert(err);
+          });
+
+          
+          Homey.set("timestampFormat", timestampFormatElement.value, function (err) {
+             if (err) return Homey.alert(err);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
